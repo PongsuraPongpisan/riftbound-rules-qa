@@ -7,7 +7,7 @@
 | config | chunks | recall@1 | recall@3 | recall@5 | MRR |
 |---|---|---|---|---|---|
 | overlap + section (baseline) | 225 | 0.500 | 0.625 | 0.750 | 0.598 |
-| bm25 + fixed 200 words (naive) | 395 | 0.750 | 0.844 | 0.875 | 0.812 |
+| bm25 + fixed 200 words (naive) | 395 | 0.750 | 0.844 | 0.875 | 0.811 |
 | bm25 + rule | 432 | 0.625 | 0.844 | 0.906 | 0.742 |
 | bm25 + section | 225 | 0.812 | 0.875 | 0.906 | 0.857 |
 
