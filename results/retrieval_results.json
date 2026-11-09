@@ -1,0 +1,79 @@
+{
+  "configs": {
+    "overlap + section (baseline)": {
+      "chunks": 225,
+      "recall@1": 0.5,
+      "recall@3": 0.625,
+      "recall@5": 0.75,
+      "mrr": 0.5976934523809524
+    },
+    "bm25 + fixed 200 words (naive)": {
+      "chunks": 395,
+      "recall@1": 0.75,
+      "recall@3": 0.84375,
+      "recall@5": 0.875,
+      "mrr": 0.8118055555555556
+    },
+    "bm25 + rule": {
+      "chunks": 432,
+      "recall@1": 0.625,
+      "recall@3": 0.84375,
+      "recall@5": 0.90625,
+      "mrr": 0.7416666666666667
+    },
+    "bm25 + section": {
+      "chunks": 225,
+      "recall@1": 0.8125,
+      "recall@3": 0.875,
+      "recall@5": 0.90625,
+      "mrr": 0.8567708333333334
+    }
+  },
+  "sweep": [
+    {
+      "min_score": 0,
+      "kept": 0.875,
+      "blocked": 0.0
+    },
+    {
+      "min_score": 2,
+      "kept": 0.875,
+      "blocked": 0.0
+    },
+    {
+      "min_score": 4,
+      "kept": 0.875,
+      "blocked": 0.0
+    },
+    {
+      "min_score": 5,
+      "kept": 0.875,
+      "blocked": 0.2
+    },
+    {
+      "min_score": 6,
+      "kept": 0.84375,
+      "blocked": 0.2
+    },
+    {
+      "min_score": 8,
+      "kept": 0.78125,
+      "blocked": 0.4
+    },
+    {
+      "min_score": 10,
+      "kept": 0.6875,
+      "blocked": 0.6
+    },
+    {
+      "min_score": 12,
+      "kept": 0.59375,
+      "blocked": 0.6
+    },
+    {
+      "min_score": 14,
+      "kept": 0.40625,
+      "blocked": 0.6
+    }
+  ]
+}
