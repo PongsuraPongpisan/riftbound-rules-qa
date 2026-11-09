@@ -1,0 +1,14 @@
+Example Game Core Rules
+Last Updated: 2000-01-01
+
+100. Playing
+101.         Setup
+102.         Each player shuffles their deck and draws 5 cards.
+102.1.                A player may redraw once.
+103.         The first player is chosen randomly.
+200. Winning
+201.         Points
+202.         A player wins when they reach 10 points.
+202.1.                Players cannot have less than 0 points.
+                      This continuation line belongs to rule 202.1.
+203.         A player who cannot draw loses 1 point instead.
