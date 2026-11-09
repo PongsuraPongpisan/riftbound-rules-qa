@@ -11,7 +11,7 @@ All LLM calls go to the class proxy: `OpenAI()` with `model="gemma-4-E4B-it"`.
 ## Course capability families covered
 
 | # | Family | Where |
-|---|---|---|
+| --- | --- | --- |
 | 1 | Structured output with schema validation | `app/schemas.py`: every agent step is JSON validated by Pydantic, and the API request and response are validated too |
 | 2 | RAG with citations | `app/corpus.py` (PDF → numbered rules), `app/retriever.py` (section chunks + BM25), `app/rag.py` (rule-number citations, `min_score` floor) |
 | 3 | Retrieval and answer evaluation | `eval/`: 37 labelled questions, recall@k, MRR, accuracy, refusal and citation accuracy, baselines |
@@ -94,7 +94,7 @@ python -m eval.eval_answers --summary                  # writes results/answer_r
 These are the 32 answerable questions. A chunk counts as relevant if it contains a gold rule.
 
 | config | recall@1 | recall@3 | recall@5 | MRR |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | word-overlap + section chunks (baseline) | 0.500 | 0.625 | 0.750 | 0.598 |
 | BM25 + fixed 200-word chunks (naive default) | 0.750 | 0.844 | 0.875 | 0.812 |
 | BM25 + one chunk per rule number | 0.625 | 0.844 | 0.906 | 0.742 |
@@ -110,14 +110,19 @@ Smaller one-rule chunks do worse at the top (recall@1 of 0.625). Many rules are 
 
 ### Answer results
 
-Run the commands above and paste `results/answer_results.md` here.
+Results on all 37 questions (temperature 0):
 
-| run | overall | answerable | hard | refusal | citation |
-|---|---|---|---|---|---|
-| none (baseline) | | | | | |
-| rag, min_score 0 | | | | | |
-| rag, min_score 5 | | | | | |
-| agent | | | | | |
+| run | overall | answerable | hard | refusal | citation | sec/q |
+| --- | --- | --- | --- | --- | --- | --- |
+| none (baseline, no retrieval) | 0.297 | 0.219 | 0.000 | 0.800 | 0.000 | 0.4 |
+| rag, min_score 0 | 0.838 | 0.812 | 1.000 | 1.000 | 0.812 | 0.7 |
+| **rag, min_score 5 (default)** | **0.838** | **0.812** | **1.000** | **1.000** | **0.812** | **0.6** |
+| agent, min_score 5 | 0.811 | 0.781 | 0.500 | 1.000 | 0.719 | 2.3 |
+
+- **Retrieval is what matters:** answerable accuracy rises from 0.219 without the rules to 0.812 with RAG. Without the rules, the model confidently invents answers (7-card hands, 4 copies per card, runes that produce "Mana").
+- **The model refuses well on its own:** RAG refused all 5 unanswerable questions even with no score floor, so the min_score floor did not change accuracy here.
+- **The agent did not beat plain RAG** on this set. Most questions need only one rule, and the agent was about 4× slower. With 37 questions, one question is worth about 3 points, so the gap between them is small.
+- **RAG's 6 misses:** 3 are retrieval misses from wording mismatches (q04, q07, q10). 1 retrieved the right rule number but not the sentence with the answer (q01). In 2 the right text was retrieved but the model misread it (q19, q23). Full list: `results/failures.txt`.
 
 ## Project structure
 
