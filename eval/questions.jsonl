@@ -1,0 +1,37 @@
+{"id": "q01", "question": "What is the minimum number of cards in a Main Deck?", "gold_rules": ["103"], "must_include": ["40"], "type": "single"}
+{"id": "q02", "question": "How many copies of the same named card can I put in my Main Deck?", "gold_rules": ["103"], "must_include": ["3|three"], "type": "single"}
+{"id": "q03", "question": "How many runes are in a Rune Deck?", "gold_rules": ["103", "161"], "must_include": ["12|twelve"], "type": "single"}
+{"id": "q04", "question": "How many cards does each player draw for their opening hand?", "gold_rules": ["116"], "must_include": ["4|four"], "type": "single"}
+{"id": "q05", "question": "During the mulligan, what is the maximum number of cards I can set aside?", "gold_rules": ["117"], "must_include": ["2|two"], "type": "single"}
+{"id": "q06", "question": "What happens to the cards I set aside during my mulligan?", "gold_rules": ["117"], "must_include": ["recycle|recycles|recycled|recycling|bottom"], "type": "single"}
+{"id": "q07", "question": "How is turn order decided at the start of a game?", "gold_rules": ["115"], "must_include": ["random|randomly"], "type": "single"}
+{"id": "q08", "question": "How many points do you need to win by default?", "gold_rules": ["194"], "must_include": ["8|eight"], "type": "single"}
+{"id": "q09", "question": "What is the Victory Score in 2v2 Magma Chamber?", "gold_rules": ["491"], "must_include": ["11|eleven"], "type": "single"}
+{"id": "q10", "question": "Can a player's point total go below zero?", "gold_rules": ["194"], "must_include": ["0|zero"], "type": "single"}
+{"id": "q11", "question": "How many runes does the turn player channel in the Channel Phase?", "gold_rules": ["315"], "must_include": ["2|two"], "type": "single"}
+{"id": "q12", "question": "What happens if I need to draw a card but my Main Deck is empty?", "gold_rules": ["432", "315"], "must_include": ["trash", "point|points"], "type": "single"}
+{"id": "q13", "question": "In a 1v1 Duel, what bonus does the player going second get?", "gold_rules": ["487"], "must_include": ["rune|runes"], "type": "single"}
+{"id": "q14", "question": "How many battlefields does each player bring to a 1v1 Duel?", "gold_rules": ["487"], "must_include": ["3|three"], "type": "single"}
+{"id": "q15", "question": "How many games are in a 1v1 Match?", "gold_rules": ["488"], "must_include": ["3|three"], "type": "single"}
+{"id": "q16", "question": "When is a unit considered Mighty?", "gold_rules": ["708", "707"], "must_include": ["5|five"], "type": "single"}
+{"id": "q17", "question": "How much Might does a single buff give a unit?", "gold_rules": ["703"], "must_include": ["1|one"], "type": "single"}
+{"id": "q18", "question": "Can a unit have more than one buff at a time?", "gold_rules": ["702"], "must_include": ["one|1|no|not|cannot|can't"], "type": "single"}
+{"id": "q19", "question": "What does the Shield keyword do?", "gold_rules": ["814"], "must_include": ["defender|defending|defends"], "type": "single"}
+{"id": "q20", "question": "What does the Tank keyword do?", "gold_rules": ["815"], "must_include": ["first|before"], "type": "single"}
+{"id": "q21", "question": "What does Ganking let a unit do?", "gold_rules": ["810"], "must_include": ["battlefield|battlefields", "move|moves|moving"], "type": "single"}
+{"id": "q22", "question": "What happens if I pay the Accelerate cost when playing a unit?", "gold_rules": ["805"], "must_include": ["ready"], "type": "single"}
+{"id": "q23", "question": "When is a permanent with Temporary killed?", "gold_rules": ["816"], "must_include": ["beginning phase|beginning"], "type": "single"}
+{"id": "q24", "question": "What does Deathknell mean?", "gold_rules": ["808"], "must_include": ["die|dies|killed|death"], "type": "single"}
+{"id": "q25", "question": "When is a player allowed to concede?", "gold_rules": ["650"], "must_include": ["any time|anytime"], "type": "single"}
+{"id": "q26", "question": "Is there a maximum amount of XP a player can have?", "gold_rules": ["733"], "must_include": ["no|unlimited"], "type": "single"}
+{"id": "q27", "question": "Does a stunned unit deal combat damage?", "gold_rules": ["424"], "must_include": ["no|not|doesn't|does not"], "type": "single"}
+{"id": "q28", "question": "What two kinds of resources do runes produce?", "gold_rules": ["163"], "must_include": ["energy", "power"], "type": "single"}
+{"id": "q29", "question": "What happens to damage on units at the end of the turn?", "gold_rules": ["317"], "must_include": ["heal|healed|heals|removed"], "type": "single"}
+{"id": "q30", "question": "How many times can I score the same battlefield in one turn?", "gold_rules": ["472"], "must_include": ["once|one|1"], "type": "single"}
+{"id": "q31", "question": "I conquer a battlefield when I'm one point from winning, but I haven't scored every battlefield this turn. What happens?", "gold_rules": ["473"], "must_include": ["draw|draws"], "type": "hard"}
+{"id": "q32", "question": "In 3-player Skirmish, what is different about the first player's first turn?", "gold_rules": ["489"], "must_include": ["not draw|doesn't draw|does not draw|no card|skip|skips"], "type": "hard"}
+{"id": "q33", "question": "How much does a Riftbound booster pack cost?", "gold_rules": [], "must_include": [], "type": "unanswerable"}
+{"id": "q34", "question": "Which champion legend is the strongest in the current meta?", "gold_rules": [], "must_include": [], "type": "unanswerable"}
+{"id": "q35", "question": "When will the next Riftbound set be released?", "gold_rules": [], "must_include": [], "type": "unanswerable"}
+{"id": "q36", "question": "How much Might does Jinx, Rebel have?", "gold_rules": [], "must_include": [], "type": "unanswerable"}
+{"id": "q37", "question": "What is the prize for winning a Regional tournament?", "gold_rules": [], "must_include": [], "type": "unanswerable"}
