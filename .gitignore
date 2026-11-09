@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+# Riot's rules text: recreated by `python -m scripts.fetch_rules`, never committed
+data/raw/
+data/processed/
