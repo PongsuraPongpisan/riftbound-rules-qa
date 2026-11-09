@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riftbound rules lookup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #eef2f4;
+    --card: #ffffff;
+    --ink: #17222e;
+    --muted: #5a6b7a;
+    --line: #d3dce3;
+    --steel: #2f5d7c;
+    --gold: #9a6f1c;
+    --gold-soft: #f4e8c8;
+    --error: #a3352b;
+    --serif: "Spectral", Georgia, "Times New Roman", serif;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #121b24;
+      --card: #1a2632;
+      --ink: #e6ecf1;
+      --muted: #93a4b3;
+      --line: #2c3b49;
+      --steel: #7fb0d2;
+      --gold: #d9ae55;
+      --gold-soft: #3a2f17;
+      --error: #e58a80;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 16px/1.55 var(--sans);
+  }
+  main { max-width: 680px; margin: 0 auto; padding: 56px 20px 40px; }
+
+  h1 {
+    font: 600 2.5rem/1.1 var(--serif);
+    letter-spacing: -0.01em;
+    margin: 0 0 12px;
+  }
+  .intro { color: var(--muted); margin: 0 0 32px; max-width: 34em; }
+
+  label.q { display: block; font-weight: 600; margin-bottom: 8px; }
+  textarea {
+    width: 100%;
+    min-height: 96px;
+    resize: vertical;
+    padding: 12px 14px;
+    font: 17px/1.5 var(--sans);
+    color: var(--ink);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+  }
+  textarea:focus-visible, button:focus-visible, input:focus-visible + span {
+    outline: 3px solid var(--steel);
+    outline-offset: 2px;
+  }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-top: 12px; }
+  fieldset.mode { border: 0; padding: 0; margin: 0; display: flex; gap: 4px; }
+  fieldset.mode legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .mode label { cursor: pointer; }
+  .mode input { position: absolute; opacity: 0; }
+  .mode span {
+    display: inline-block;
+    padding: 7px 12px;
+    font-size: 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    background: transparent;
+  }
+  .mode input:checked + span { color: var(--ink); border-color: var(--ink); font-weight: 500; }
+
+  button.ask {
+    font: 600 15px var(--sans);
+    padding: 10px 22px;
+    border: 0;
+    border-radius: 6px;
+    background: var(--ink);
+    color: var(--paper);
+    cursor: pointer;
+  }
+  button.ask:disabled { opacity: 0.55; cursor: progress; }
+
+  .examples { margin: 20px 0 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+  .examples p { margin: 0; color: var(--muted); font-size: 14px; }
+  .examples button {
+    font: 14px var(--sans);
+    padding: 4px 10px;
+    border: 1px dashed var(--line);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--steel);
+    cursor: pointer;
+  }
+  .examples button:hover { border-style: solid; }
+
+  #result { margin-top: 40px; }
+  .status { color: var(--muted); }
+  .error { color: var(--error); }
+
+  .answer {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--gold);
+    border-radius: 6px;
+    padding: 20px 22px;
+  }
+  .answer .question { margin: 0 0 10px; color: var(--muted); font-size: 14px; }
+  .answer .text { margin: 0; font: 1.25rem/1.6 var(--serif); }
+  .cite {
+    font: 500 0.8em var(--sans);
+    color: var(--gold);
+    white-space: nowrap;
+  }
+
+  /* The rule tabs: each cited rule opens the official wording beneath the answer. */
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .tab {
+    font: 600 13px var(--sans);
+    padding: 5px 12px 5px 10px;
+    border: 1px solid var(--gold);
+    border-radius: 4px 14px 14px 4px;
+    background: transparent;
+    color: var(--gold);
+    cursor: pointer;
+  }
+  .tab[aria-expanded="true"] { background: var(--gold); color: var(--card); }
+  .rule-text {
+    margin: 12px 0 0;
+    padding: 14px 16px;
+    background: var(--gold-soft);
+    border-radius: 6px;
+    font: 15px/1.6 var(--serif);
+    white-space: pre-wrap;
+  }
+  .rule-text[hidden] { display: none; }
+  .note { margin: 14px 0 0; font-size: 13px; color: var(--muted); }
+
+  footer { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  footer a { color: var(--steel); }
+
+  @media (max-width: 520px) {
+    main { padding-top: 32px; }
+    h1 { font-size: 2rem; }
+    .controls { flex-direction: column; align-items: stretch; }
+    button.ask { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Riftbound rules lookup</h1>
+  <p class="intro">Ask a rules question and get a short answer taken from the official Core Rules (updated 9 October 2026). Every answer names the rule it comes from, so you can check it.</p>
+
+  <form id="ask-form">
+    <label class="q" for="question">Your question</label>
+    <textarea id="question" maxlength="500" required placeholder="How many cards are in a Rune Deck?"></textarea>
+    <div class="controls">
+      <fieldset class="mode">
+        <legend>How to answer</legend>
+        <label><input type="radio" name="mode" value="rag" checked><span>Quick answer</span></label>
+        <label><input type="radio" name="mode" value="agent"><span>Agent, searches step by step</span></label>
+      </fieldset>
+      <button class="ask" type="submit" id="ask-button">Ask</button>
+    </div>
+  </form>
+
+  <div class="examples">
+    <p>Try:</p>
+    <button type="button">How many points do you need to win?</button>
+    <button type="button">What does the Tank keyword do?</button>
+    <button type="button">What happens to the cards I set aside during my mulligan?</button>
+  </div>
+
+  <section id="result" aria-live="polite"></section>
+
+  <footer>
+    Unofficial fan project built for a university course on LLM applications. Not affiliated with or endorsed by Riot Games.
+    Answers can be wrong, so check the cited rule.
+    <a href="https://github.com/PongsuraPongpisan/riftbound-rules-qa">Source code</a>
+  </footer>
+</main>
+
+<script>
+  const form = document.getElementById("ask-form");
+  const box = document.getElementById("question");
+  const button = document.getElementById("ask-button");
+  const result = document.getElementById("result");
+
+  const escapeHtml = s => s.replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+
+  function showStatus(text, isError) {
+    result.innerHTML = "";
+    const p = document.createElement("p");
+    p.className = isError ? "status error" : "status";
+    p.textContent = text;
+    result.appendChild(p);
+  }
+
+  function showAnswer(question, data) {
+    const text = escapeHtml(data.answer).replace(
+      /\[(?:rules?\s*)?(\d{3}(?:\.[0-9a-z]+)*)\]/gi,
+      (_, n) => `<span class="cite">[${n}]</span>`
+    );
+    result.innerHTML = `
+      <div class="answer">
+        <p class="question">${escapeHtml(question)}</p>
+        <p class="text">${text}</p>
+        <div class="tabs"></div>
+        <div class="texts"></div>
+      </div>`;
+    const tabs = result.querySelector(".tabs");
+    const texts = result.querySelector(".texts");
+    data.sources.forEach((s, i) => {
+      const id = `rule-text-${i}`;
+      const tab = document.createElement("button");
+      tab.type = "button";
+      tab.className = "tab";
+      tab.textContent = `Rule ${s.rule}`;
+      tab.setAttribute("aria-expanded", "false");
+      tab.setAttribute("aria-controls", id);
+      const body = document.createElement("div");
+      body.className = "rule-text";
+      body.id = id;
+      body.hidden = true;
+      body.textContent = s.text;
+      tab.addEventListener("click", () => {
+        const open = tab.getAttribute("aria-expanded") === "true";
+        tab.setAttribute("aria-expanded", String(!open));
+        body.hidden = open;
+      });
+      tabs.appendChild(tab);
+      texts.appendChild(body);
+    });
+    if (data.sources.length) {
+      const note = document.createElement("p");
+      note.className = "note";
+      note.textContent = "Open a rule to read the official wording.";
+      result.querySelector(".answer").appendChild(note);
+    }
+  }
+
+  async function ask(question) {
+    const mode = form.querySelector('input[name="mode"]:checked').value;
+    button.disabled = true;
+    showStatus(mode === "agent" ? "Searching the rules step by step…" : "Looking it up…");
+    const slow = setTimeout(() => showStatus(
+      "Still working. The first question after a quiet period can take up to a minute while the server starts."
+    ), 8000);
+    try {
+      const res = await fetch("/ask", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({question, mode})
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const detail = typeof data.detail === "string" ? data.detail : "Questions must be 3 to 500 characters long.";
+        showStatus(detail, true);
+        return;
+      }
+      showAnswer(question, data);
+    } catch (e) {
+      showStatus("Couldn't reach the server. Check your connection and try again.", true);
+    } finally {
+      clearTimeout(slow);
+      button.disabled = false;
+    }
+  }
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const q = box.value.trim();
+    if (q.length >= 3) ask(q);
+  });
+  box.addEventListener("keydown", e => {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) form.requestSubmit();
+  });
+  document.querySelectorAll(".examples button").forEach(b => b.addEventListener("click", () => {
+    box.value = b.textContent;
+    ask(b.textContent);
+  }));
+</script>
+</body>
+</html>

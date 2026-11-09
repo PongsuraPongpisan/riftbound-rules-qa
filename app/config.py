@@ -22,3 +22,7 @@ MIN_SCORE = float(os.getenv("MIN_SCORE", "5.0"))
 AGENT_MAX_STEPS = int(os.getenv("AGENT_MAX_STEPS", "5"))
 
 REFUSAL = "I couldn't find this in the Core Rules."
+
+# Public deployment: protect the class API key from heavy use.
+RATE_LIMIT_PER_MINUTE = int(os.getenv("RATE_LIMIT_PER_MINUTE", "6"))   # per visitor IP
+DAILY_LIMIT = int(os.getenv("DAILY_LIMIT", "300"))                      # whole app, per UTC day

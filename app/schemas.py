@@ -18,9 +18,15 @@ class AskRequest(BaseModel):
     mode: Literal["rag", "agent", "none"] = "rag"
 
 
+class RuleSource(BaseModel):
+    rule: str
+    text: str
+
+
 class AskResponse(BaseModel):
     answer: str
     citations: list[str]
+    sources: list[RuleSource] = []
     mode: str
 
 
