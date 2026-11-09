@@ -1,300 +1,1234 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Riftbound rules lookup</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --paper: #eef2f4;
-    --card: #ffffff;
-    --ink: #17222e;
-    --muted: #5a6b7a;
-    --line: #d3dce3;
-    --steel: #2f5d7c;
-    --gold: #9a6f1c;
-    --gold-soft: #f4e8c8;
-    --error: #a3352b;
-    --serif: "Spectral", Georgia, "Times New Roman", serif;
-    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) {
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Riftbound Rules Lookup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ═══════════════════ VARIABLES ═══════════════════ */
     :root {
-      --paper: #121b24;
-      --card: #1a2632;
-      --ink: #e6ecf1;
-      --muted: #93a4b3;
-      --line: #2c3b49;
-      --steel: #7fb0d2;
-      --gold: #d9ae55;
-      --gold-soft: #3a2f17;
-      --error: #e58a80;
-      color-scheme: dark;
+      --bg-deep: #0a0c14;
+      --bg-mid: #0f1220;
+      --bg-card: #141828;
+      --bg-surface: #1a1f35;
+      --text: #e8e6f0;
+      --text-dim: #8b8a9e;
+      --text-muted: #5e5d72;
+      --border: #2a2d45;
+      --border-glow: #3d3f60;
+      --gold: #c9a84c;
+      --gold-bright: #f0d060;
+      --gold-dim: #8a6d2a;
+      --gold-bg: rgba(201, 168, 76, 0.08);
+      --blue: #4a7fff;
+      --blue-glow: rgba(74, 127, 255, 0.3);
+      --purple: #8b5cf6;
+      --purple-glow: rgba(139, 92, 246, 0.2);
+      --red: #ef4444;
+      --red-glow: rgba(239, 68, 68, 0.15);
+      --green: #34d399;
+      --orange: #f59e0b;
+      --heading: "Cinzel", "Palatino Linotype", "Book Antiqua", serif;
+      --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+      --radius: 10px;
+      --radius-lg: 16px;
     }
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--paper);
-    color: var(--ink);
-    font: 16px/1.55 var(--sans);
-  }
-  main { max-width: 680px; margin: 0 auto; padding: 56px 20px 40px; }
 
-  h1 {
-    font: 600 2.5rem/1.1 var(--serif);
-    letter-spacing: -0.01em;
-    margin: 0 0 12px;
-  }
-  .intro { color: var(--muted); margin: 0 0 32px; max-width: 34em; }
+    /* ═══════════════════ RESET & LAYOUT ═══════════════════ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  label.q { display: block; font-weight: 600; margin-bottom: 8px; }
-  textarea {
-    width: 100%;
-    min-height: 96px;
-    resize: vertical;
-    padding: 12px 14px;
-    font: 17px/1.5 var(--sans);
-    color: var(--ink);
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-  }
-  textarea:focus-visible, button:focus-visible, input:focus-visible + span {
-    outline: 3px solid var(--steel);
-    outline-offset: 2px;
-  }
+    html {
+      scroll-behavior: smooth;
+    }
 
-  .controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-top: 12px; }
-  fieldset.mode { border: 0; padding: 0; margin: 0; display: flex; gap: 4px; }
-  fieldset.mode legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-  .mode label { cursor: pointer; }
-  .mode input { position: absolute; opacity: 0; }
-  .mode span {
-    display: inline-block;
-    padding: 7px 12px;
-    font-size: 14px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    color: var(--muted);
-    background: transparent;
-  }
-  .mode input:checked + span { color: var(--ink); border-color: var(--ink); font-weight: 500; }
+    body {
+      background: var(--bg-deep);
+      color: var(--text);
+      font: 16px/1.6 var(--body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-  button.ask {
-    font: 600 15px var(--sans);
-    padding: 10px 22px;
-    border: 0;
-    border-radius: 6px;
-    background: var(--ink);
-    color: var(--paper);
-    cursor: pointer;
-  }
-  button.ask:disabled { opacity: 0.55; cursor: progress; }
+    /* ═══════════════════ ANIMATED BACKGROUND ═══════════════════ */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
 
-  .examples { margin: 20px 0 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
-  .examples p { margin: 0; color: var(--muted); font-size: 14px; }
-  .examples button {
-    font: 14px var(--sans);
-    padding: 4px 10px;
-    border: 1px dashed var(--line);
-    border-radius: 4px;
-    background: transparent;
-    color: var(--steel);
-    cursor: pointer;
-  }
-  .examples button:hover { border-style: solid; }
+    .bg-gradient {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(74, 127, 255, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 35% at 10% 80%, rgba(201, 168, 76, 0.06) 0%, transparent 50%);
+    }
 
-  #result { margin-top: 40px; }
-  .status { color: var(--muted); }
-  .error { color: var(--error); }
+    /* ═══════════════════ TOP NAV BAR ═══════════════════ */
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 32px;
+      height: 60px;
+      background: rgba(10, 12, 20, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
 
-  .answer {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-left: 4px solid var(--gold);
-    border-radius: 6px;
-    padding: 20px 22px;
-  }
-  .answer .question { margin: 0 0 10px; color: var(--muted); font-size: 14px; }
-  .answer .text { margin: 0; font: 1.25rem/1.6 var(--serif); }
-  .cite {
-    font: 500 0.8em var(--sans);
-    color: var(--gold);
-    white-space: nowrap;
-  }
+    .topbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font: 700 1.15rem var(--heading);
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
 
-  /* The rule tabs: each cited rule opens the official wording beneath the answer. */
-  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
-  .tab {
-    font: 600 13px var(--sans);
-    padding: 5px 12px 5px 10px;
-    border: 1px solid var(--gold);
-    border-radius: 4px 14px 14px 4px;
-    background: transparent;
-    color: var(--gold);
-    cursor: pointer;
-  }
-  .tab[aria-expanded="true"] { background: var(--gold); color: var(--card); }
-  .rule-text {
-    margin: 12px 0 0;
-    padding: 14px 16px;
-    background: var(--gold-soft);
-    border-radius: 6px;
-    font: 15px/1.6 var(--serif);
-    white-space: pre-wrap;
-  }
-  .rule-text[hidden] { display: none; }
-  .note { margin: 14px 0 0; font-size: 13px; color: var(--muted); }
+    .topbar-logo .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/%3E%3C/svg%3E") center/contain no-repeat;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/%3E%3C/svg%3E") center/contain no-repeat;
+    }
 
-  footer { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
-  footer a { color: var(--steel); }
+    .topbar-links {
+      display: flex;
+      gap: 6px;
+      margin-left: auto;
+    }
 
-  @media (max-width: 520px) {
-    main { padding-top: 32px; }
-    h1 { font-size: 2rem; }
-    .controls { flex-direction: column; align-items: stretch; }
-    button.ask { width: 100%; }
-  }
-</style>
+    .topbar-links a {
+      color: var(--text-dim);
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .topbar-links a:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .topbar-links a.active {
+      color: var(--gold);
+    }
+
+    /* ═══════════════════ HERO SECTION ═══════════════════ */
+    .hero {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 140px 24px 60px;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(201, 168, 76, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: var(--gold-bg);
+      border: 1px solid rgba(201, 168, 76, 0.2);
+      border-radius: 999px;
+      margin-bottom: 24px;
+    }
+
+    .hero-badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.4);
+      }
+
+      50% {
+        opacity: 0.7;
+        box-shadow: 0 0 0 6px rgba(201, 168, 76, 0);
+      }
+    }
+
+    .hero h1 {
+      font: 900 3.2rem/1.1 var(--heading);
+      letter-spacing: 0.02em;
+      background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 40%, #e8d5a0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+      max-width: 600px;
+    }
+
+    .hero p {
+      color: var(--text-dim);
+      font-size: 1.05rem;
+      max-width: 480px;
+      line-height: 1.7;
+    }
+
+    /* ═══════════════════ DOMAIN CHIPS (decorative) ═══════════════════ */
+    .domain-chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 32px;
+    }
+
+    .domain-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 999px;
+      border: 1px solid;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.8;
+      transition: all 0.3s;
+    }
+
+    .domain-chip:hover {
+      opacity: 1;
+      transform: translateY(-1px);
+    }
+
+    .domain-chip .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .chip-fury {
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.3);
+      background: rgba(239, 68, 68, 0.06);
+    }
+
+    .chip-fury .dot {
+      background: #ef4444;
+    }
+
+    .chip-calm {
+      color: #34d399;
+      border-color: rgba(52, 211, 153, 0.3);
+      background: rgba(52, 211, 153, 0.06);
+    }
+
+    .chip-calm .dot {
+      background: #34d399;
+    }
+
+    .chip-mind {
+      color: #60a5fa;
+      border-color: rgba(96, 165, 250, 0.3);
+      background: rgba(96, 165, 250, 0.06);
+    }
+
+    .chip-mind .dot {
+      background: #60a5fa;
+    }
+
+    .chip-body {
+      color: #f59e0b;
+      border-color: rgba(245, 158, 11, 0.3);
+      background: rgba(245, 158, 11, 0.06);
+    }
+
+    .chip-body .dot {
+      background: #f59e0b;
+    }
+
+    .chip-chaos {
+      color: #a78bfa;
+      border-color: rgba(167, 139, 250, 0.3);
+      background: rgba(167, 139, 250, 0.06);
+    }
+
+    .chip-chaos .dot {
+      background: #a78bfa;
+    }
+
+    .chip-order {
+      color: #fbbf24;
+      border-color: rgba(251, 191, 36, 0.3);
+      background: rgba(251, 191, 36, 0.06);
+    }
+
+    .chip-order .dot {
+      background: #fbbf24;
+    }
+
+    /* ═══════════════════ MAIN CONTENT ═══════════════════ */
+    .content {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ═══════════════════ GLASS CARD ═══════════════════ */
+    .glass-card {
+      background: rgba(20, 24, 40, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(201, 168, 76, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    /* ═══════════════════ FORM STYLES ═══════════════════ */
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font: 600 0.85rem var(--heading);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .form-label svg {
+      width: 16px;
+      height: 16px;
+      opacity: 0.6;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      resize: vertical;
+      padding: 16px 18px;
+      font: 16px/1.6 var(--body);
+      color: var(--text);
+      background: var(--bg-deep);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--gold-dim);
+      box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1), inset 0 0 20px rgba(201, 168, 76, 0.03);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+
+    /* Mode toggle */
+    fieldset.mode {
+      border: 0;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      gap: 4px;
+      background: var(--bg-deep);
+      border-radius: 8px;
+      padding: 3px;
+    }
+
+    fieldset.mode legend {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+
+    .mode label {
+      cursor: pointer;
+    }
+
+    .mode input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .mode span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 6px;
+      color: var(--text-muted);
+      transition: all 0.25s;
+    }
+
+    .mode span svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .mode input:checked+span {
+      color: var(--gold);
+      background: rgba(201, 168, 76, 0.1);
+      font-weight: 600;
+    }
+
+    .mode input:focus-visible+span {
+      outline: 2px solid var(--gold);
+      outline-offset: 1px;
+    }
+
+    /* Ask button */
+    button.ask {
+      font: 700 14px var(--heading);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      color: var(--bg-deep);
+      background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+      box-shadow: 0 4px 20px rgba(201, 168, 76, 0.25);
+      transition: all 0.3s;
+    }
+
+    button.ask::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%);
+      transform: translateX(-100%);
+      transition: transform 0.6s;
+    }
+
+    button.ask:hover::before {
+      transform: translateX(100%);
+    }
+
+    button.ask:hover {
+      box-shadow: 0 6px 30px rgba(201, 168, 76, 0.35);
+      transform: translateY(-1px);
+    }
+
+    button.ask:disabled {
+      opacity: 0.5;
+      cursor: progress;
+      transform: none;
+    }
+
+    /* ═══════════════════ EXAMPLE QUESTIONS ═══════════════════ */
+    .examples {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .examples-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .examples-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .example-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      text-align: left;
+      padding: 12px 16px;
+      font: 14px/1.5 var(--body);
+      color: var(--text-dim);
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .example-btn:hover {
+      color: var(--text);
+      border-color: var(--border-glow);
+      background: rgba(201, 168, 76, 0.04);
+      transform: translateX(4px);
+    }
+
+    .example-btn::before {
+      content: "→";
+      color: var(--gold-dim);
+      font-weight: 600;
+      transition: color 0.25s;
+    }
+
+    .example-btn:hover::before {
+      color: var(--gold);
+    }
+
+    /* ═══════════════════ RESULTS ═══════════════════ */
+    #result {
+      margin-top: 32px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      background: rgba(74, 127, 255, 0.06);
+      border: 1px solid rgba(74, 127, 255, 0.15);
+      color: var(--blue);
+      font-size: 14px;
+    }
+
+    .status.error {
+      background: var(--red-glow);
+      border-color: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+    }
+
+    .status .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(74, 127, 255, 0.2);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Answer card */
+    .answer {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      animation: slideUp 0.4s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .answer-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .answer-icon {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--gold-bg), rgba(201, 168, 76, 0.15));
+      border: 1px solid rgba(201, 168, 76, 0.2);
+      border-radius: 10px;
+      color: var(--gold);
+    }
+
+    .answer-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .answer-meta {
+      flex: 1;
+    }
+
+    .answer .question {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .answer .question strong {
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .answer-body {
+      padding: 24px;
+    }
+
+    .answer .text {
+      font-size: 1.1rem;
+      line-height: 1.75;
+      color: var(--text);
+    }
+
+    .cite {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font: 600 0.75em var(--body);
+      color: var(--gold);
+      background: var(--gold-bg);
+      padding: 1px 7px;
+      border-radius: 4px;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    /* Source tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font: 600 12px var(--body);
+      padding: 6px 14px;
+      border: 1px solid rgba(201, 168, 76, 0.25);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--gold-dim);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .tab:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .tab[aria-expanded="true"] {
+      background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+      color: var(--bg-deep);
+      border-color: var(--gold);
+    }
+
+    .tab::before {
+      content: "§";
+      opacity: 0.6;
+    }
+
+    .rule-text {
+      margin: 10px 0 0;
+      padding: 16px 20px;
+      background: rgba(201, 168, 76, 0.05);
+      border: 1px solid rgba(201, 168, 76, 0.1);
+      border-radius: var(--radius);
+      font: 14px/1.7 var(--body);
+      color: var(--text-dim);
+      white-space: pre-wrap;
+    }
+
+    .rule-text[hidden] {
+      display: none;
+    }
+
+    .note {
+      margin: 12px 0 0;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .note::before {
+      content: "💡";
+      font-size: 14px;
+    }
+
+    /* ═══════════════════ INFO CARDS ═══════════════════ */
+    .info-section {
+      margin-top: 48px;
+    }
+
+    .info-section h2 {
+      font: 700 1.1rem var(--heading);
+      color: var(--gold);
+      letter-spacing: 0.04em;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-section h2::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--border), transparent);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .info-card {
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: all 0.3s;
+    }
+
+    .info-card:hover {
+      border-color: var(--border-glow);
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateY(-2px);
+    }
+
+    .info-card .ic-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .info-card h3 {
+      font: 600 14px var(--body);
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .info-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ═══════════════════ FOOTER ═══════════════════ */
+    footer {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 24px 24px 48px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    footer a {
+      color: var(--gold-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover {
+      color: var(--gold);
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 12px;
+    }
+
+    /* ═══════════════════ RESPONSIVE ═══════════════════ */
+    @media (max-width: 640px) {
+      .topbar {
+        padding: 0 16px;
+      }
+
+      .topbar-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 120px 20px 40px;
+      }
+
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+
+      .content {
+        padding: 0 16px 60px;
+      }
+
+      .glass-card {
+        padding: 20px;
+      }
+
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      button.ask {
+        width: 100%;
+      }
+
+      .domain-chips {
+        gap: 6px;
+      }
+
+      .domain-chip {
+        font-size: 11px;
+        padding: 4px 10px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ═══════════════════ SCROLLBAR ═══════════════════ */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-deep);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border-glow);
+    }
+
+    /* ═══════════════════ SELECTION ═══════════════════ */
+    ::selection {
+      background: rgba(201, 168, 76, 0.3);
+      color: var(--text);
+    }
+  </style>
 </head>
+
 <body>
-<main>
-  <h1>Riftbound rules lookup</h1>
-  <p class="intro">Ask a rules question and get a short answer taken from the official Core Rules (updated 9 October 2026). Every answer names the rule it comes from, so you can check it.</p>
 
-  <form id="ask-form">
-    <label class="q" for="question">Your question</label>
-    <textarea id="question" maxlength="500" required placeholder="How many cards are in a Rune Deck?"></textarea>
-    <div class="controls">
-      <fieldset class="mode">
-        <legend>How to answer</legend>
-        <label><input type="radio" name="mode" value="rag" checked><span>Quick answer</span></label>
-        <label><input type="radio" name="mode" value="agent"><span>Agent, searches step by step</span></label>
-      </fieldset>
-      <button class="ask" type="submit" id="ask-button">Ask</button>
+  <!-- Floating particles canvas -->
+  <canvas id="bg-canvas"></canvas>
+  <div class="bg-gradient"></div>
+
+  <!-- Top navigation bar -->
+  <nav class="topbar">
+    <div class="topbar-logo">
+      <div class="logo-icon"></div>
+      Riftbound
     </div>
-  </form>
+    <div class="topbar-links">
+      <a href="#" class="active">Rules Lookup</a>
+      <a href="https://playriftbound.com/en-us/" target="_blank" rel="noopener">Official Site</a>
+      <a href="https://github.com/PongsuraPongpisan/riftbound-rules-qa" target="_blank" rel="noopener">Source</a>
+    </div>
+  </nav>
 
-  <div class="examples">
-    <p>Try:</p>
-    <button type="button">How many points do you need to win?</button>
-    <button type="button">What does the Tank keyword do?</button>
-    <button type="button">What happens to the cards I set aside during my mulligan?</button>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span></span>
+      Core Rules · Updated Oct 2026
+    </div>
+    <h1>Rules of the Rift</h1>
+    <p>Ask any rules question and get precise answers drawn directly from the official Riftbound Core Rules — with
+      citations you can verify.</p>
+
+    <div class="domain-chips">
+      <span class="domain-chip chip-fury"><span class="dot"></span>Fury</span>
+      <span class="domain-chip chip-calm"><span class="dot"></span>Calm</span>
+      <span class="domain-chip chip-mind"><span class="dot"></span>Mind</span>
+      <span class="domain-chip chip-body"><span class="dot"></span>Body</span>
+      <span class="domain-chip chip-chaos"><span class="dot"></span>Chaos</span>
+      <span class="domain-chip chip-order"><span class="dot"></span>Order</span>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <div class="content">
+
+    <!-- Ask Form Card -->
+    <div class="glass-card">
+      <form id="ask-form">
+        <label class="form-label" for="question">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+          Ask the Oracle
+        </label>
+        <textarea id="question" maxlength="500" required
+          placeholder="e.g. How many cards are in a Rune Deck?"></textarea>
+
+        <div class="controls">
+          <fieldset class="mode">
+            <legend>How to answer</legend>
+            <label><input type="radio" name="mode" value="rag" checked><span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+                Quick answer
+              </span></label>
+            <label><input type="radio" name="mode" value="agent"><span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                </svg>
+                Agent · Deep search
+              </span></label>
+          </fieldset>
+          <button class="ask" type="submit" id="ask-button">
+            Seek Answer
+          </button>
+        </div>
+      </form>
+
+      <!-- Example questions -->
+      <div class="examples">
+        <div class="examples-label">Popular questions</div>
+        <div class="examples-grid">
+          <button type="button" class="example-btn">How many points do you need to win?</button>
+          <button type="button" class="example-btn">What does the Tank keyword do?</button>
+          <button type="button" class="example-btn">What happens to the cards I set aside during my mulligan?</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results area -->
+    <section id="result" aria-live="polite"></section>
+
+    <!-- Info cards -->
+    <div class="info-section">
+      <h2>How It Works</h2>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="ic-icon">⚡</div>
+          <h3>Quick Answer</h3>
+          <p>Retrieves the most relevant rules and generates a concise answer in seconds.</p>
+        </div>
+        <div class="info-card">
+          <div class="ic-icon">🔍</div>
+          <h3>Agent Mode</h3>
+          <p>An AI agent searches the rulebook step-by-step for complex multi-rule questions.</p>
+        </div>
+        <div class="info-card">
+          <div class="ic-icon">📜</div>
+          <h3>Cited Sources</h3>
+          <p>Every answer references specific rule numbers so you can verify the official wording.</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <section id="result" aria-live="polite"></section>
-
+  <!-- Footer -->
   <footer>
-    Unofficial fan project built for a university course on LLM applications. Not affiliated with or endorsed by Riot Games.
-    Answers can be wrong, so check the cited rule.
-    <a href="https://github.com/PongsuraPongpisan/riftbound-rules-qa">Source code</a>
+    <div class="footer-links">
+      <a href="https://playriftbound.com/en-us/" target="_blank" rel="noopener">playriftbound.com</a>
+      <a href="https://github.com/PongsuraPongpisan/riftbound-rules-qa" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    Unofficial fan project built for a university course on LLM applications.
+    Not affiliated with or endorsed by Riot Games. Answers can be wrong — always check the cited rule.
   </footer>
-</main>
 
-<script>
-  const form = document.getElementById("ask-form");
-  const box = document.getElementById("question");
-  const button = document.getElementById("ask-button");
-  const result = document.getElementById("result");
+  <!-- ═══════════════════ SCRIPTS ═══════════════════ -->
+  <script>
+    // ─── Particle Background ───
+    (function initParticles() {
+      const canvas = document.getElementById("bg-canvas");
+      const ctx = canvas.getContext("2d");
+      let w, h, particles = [];
+      const COLORS = [
+        "rgba(201,168,76,0.3)",
+        "rgba(74,127,255,0.2)",
+        "rgba(139,92,246,0.15)",
+        "rgba(201,168,76,0.15)",
+        "rgba(96,165,250,0.12)",
+      ];
 
-  const escapeHtml = s => s.replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
-
-  function showStatus(text, isError) {
-    result.innerHTML = "";
-    const p = document.createElement("p");
-    p.className = isError ? "status error" : "status";
-    p.textContent = text;
-    result.appendChild(p);
-  }
-
-  function showAnswer(question, data) {
-    const text = escapeHtml(data.answer).replace(
-      /\[(?:rules?\s*)?(\d{3}(?:\.[0-9a-z]+)*)\]/gi,
-      (_, n) => `<span class="cite">[${n}]</span>`
-    );
-    result.innerHTML = `
-      <div class="answer">
-        <p class="question">${escapeHtml(question)}</p>
-        <p class="text">${text}</p>
-        <div class="tabs"></div>
-        <div class="texts"></div>
-      </div>`;
-    const tabs = result.querySelector(".tabs");
-    const texts = result.querySelector(".texts");
-    data.sources.forEach((s, i) => {
-      const id = `rule-text-${i}`;
-      const tab = document.createElement("button");
-      tab.type = "button";
-      tab.className = "tab";
-      tab.textContent = `Rule ${s.rule}`;
-      tab.setAttribute("aria-expanded", "false");
-      tab.setAttribute("aria-controls", id);
-      const body = document.createElement("div");
-      body.className = "rule-text";
-      body.id = id;
-      body.hidden = true;
-      body.textContent = s.text;
-      tab.addEventListener("click", () => {
-        const open = tab.getAttribute("aria-expanded") === "true";
-        tab.setAttribute("aria-expanded", String(!open));
-        body.hidden = open;
-      });
-      tabs.appendChild(tab);
-      texts.appendChild(body);
-    });
-    if (data.sources.length) {
-      const note = document.createElement("p");
-      note.className = "note";
-      note.textContent = "Open a rule to read the official wording.";
-      result.querySelector(".answer").appendChild(note);
-    }
-  }
-
-  async function ask(question) {
-    const mode = form.querySelector('input[name="mode"]:checked').value;
-    button.disabled = true;
-    showStatus(mode === "agent" ? "Searching the rules step by step…" : "Looking it up…");
-    const slow = setTimeout(() => showStatus(
-      "Still working. The first question after a quiet period can take up to a minute while the server starts."
-    ), 8000);
-    try {
-      const res = await fetch("/ask", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({question, mode})
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        const detail = typeof data.detail === "string" ? data.detail : "Questions must be 3 to 500 characters long.";
-        showStatus(detail, true);
-        return;
+      function resize() {
+        w = canvas.width = innerWidth;
+        h = canvas.height = innerHeight;
       }
-      showAnswer(question, data);
-    } catch (e) {
-      showStatus("Couldn't reach the server. Check your connection and try again.", true);
-    } finally {
-      clearTimeout(slow);
-      button.disabled = false;
-    }
-  }
+      function spawn() {
+        particles = [];
+        const count = Math.min(60, Math.floor(w * h / 18000));
+        for (let i = 0; i < count; i++) {
+          particles.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            r: Math.random() * 2 + 0.5,
+            dx: (Math.random() - 0.5) * 0.3,
+            dy: (Math.random() - 0.5) * 0.3,
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+            phase: Math.random() * Math.PI * 2,
+          });
+        }
+      }
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        const t = performance.now() / 1000;
+        particles.forEach(p => {
+          p.x += p.dx;
+          p.y += p.dy;
+          if (p.x < -10) p.x = w + 10;
+          if (p.x > w + 10) p.x = -10;
+          if (p.y < -10) p.y = h + 10;
+          if (p.y > h + 10) p.y = -10;
+          const alpha = 0.4 + 0.6 * Math.sin(t + p.phase);
+          ctx.globalAlpha = alpha;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.fill();
+        });
+        // Draw faint connections
+        ctx.globalAlpha = 0.04;
+        ctx.strokeStyle = "rgba(201,168,76,0.5)";
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 150) {
+              ctx.globalAlpha = 0.04 * (1 - dist / 150);
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(draw);
+      }
+      resize();
+      spawn();
+      draw();
+      addEventListener("resize", () => { resize(); spawn(); });
+    })();
 
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    const q = box.value.trim();
-    if (q.length >= 3) ask(q);
-  });
-  box.addEventListener("keydown", e => {
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) form.requestSubmit();
-  });
-  document.querySelectorAll(".examples button").forEach(b => b.addEventListener("click", () => {
-    box.value = b.textContent;
-    ask(b.textContent);
-  }));
-</script>
+    // ─── App Logic ───
+    const form = document.getElementById("ask-form");
+    const box = document.getElementById("question");
+    const button = document.getElementById("ask-button");
+    const result = document.getElementById("result");
+
+    const escapeHtml = s => s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    function showStatus(text, isError) {
+      result.innerHTML = "";
+      const el = document.createElement("div");
+      el.className = isError ? "status error" : "status";
+      if (!isError) el.innerHTML = '<div class="spinner"></div>';
+      const span = document.createElement("span");
+      span.textContent = text;
+      el.appendChild(span);
+      result.appendChild(el);
+    }
+
+    function showAnswer(question, data) {
+      const text = escapeHtml(data.answer).replace(
+        /\[(?:rules?\s*)?([\d]{3}(?:\.[0-9a-z]+)*)\]/gi,
+        (_, n) => `<span class="cite">§ ${n}</span>`
+      );
+      result.innerHTML = `
+      <div class="answer">
+        <div class="answer-header">
+          <div class="answer-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </div>
+          <div class="answer-meta">
+            <p class="question"><strong>Q:</strong> ${escapeHtml(question)}</p>
+          </div>
+        </div>
+        <div class="answer-body">
+          <p class="text">${text}</p>
+          <div class="tabs"></div>
+          <div class="texts"></div>
+        </div>
+      </div>`;
+      const tabs = result.querySelector(".tabs");
+      const texts = result.querySelector(".texts");
+      data.sources.forEach((s, i) => {
+        const id = `rule-text-${i}`;
+        const tab = document.createElement("button");
+        tab.type = "button";
+        tab.className = "tab";
+        tab.textContent = `Rule ${s.rule}`;
+        tab.setAttribute("aria-expanded", "false");
+        tab.setAttribute("aria-controls", id);
+        const body = document.createElement("div");
+        body.className = "rule-text";
+        body.id = id;
+        body.hidden = true;
+        body.textContent = s.text;
+        tab.addEventListener("click", () => {
+          const open = tab.getAttribute("aria-expanded") === "true";
+          tab.setAttribute("aria-expanded", String(!open));
+          body.hidden = open;
+        });
+        tabs.appendChild(tab);
+        texts.appendChild(body);
+      });
+      if (data.sources.length) {
+        const note = document.createElement("p");
+        note.className = "note";
+        note.textContent = "Open a rule tab to read the official wording.";
+        result.querySelector(".answer-body").appendChild(note);
+      }
+    }
+
+    async function ask(question) {
+      const mode = form.querySelector('input[name="mode"]:checked').value;
+      button.disabled = true;
+      showStatus(mode === "agent" ? "Agent is searching the rules step by step…" : "Consulting the oracle…");
+      const slow = setTimeout(() => showStatus(
+        "Still working. The first question after a quiet period can take up to a minute while the server wakes up."
+      ), 8000);
+      try {
+        const res = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question, mode })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          const detail = typeof data.detail === "string" ? data.detail : "Questions must be 3 to 500 characters long.";
+          showStatus(detail, true);
+          return;
+        }
+        showAnswer(question, data);
+      } catch (e) {
+        showStatus("Couldn't reach the server. Check your connection and try again.", true);
+      } finally {
+        clearTimeout(slow);
+        button.disabled = false;
+      }
+    }
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const q = box.value.trim();
+      if (q.length >= 3) ask(q);
+    });
+    box.addEventListener("keydown", e => {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) form.requestSubmit();
+    });
+    document.querySelectorAll(".example-btn").forEach(b => b.addEventListener("click", () => {
+      box.value = b.textContent;
+      ask(b.textContent);
+    }));
+  </script>
 </body>
+
 </html>
